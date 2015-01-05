@@ -1,0 +1,50 @@
+#
+# This file is a part of the Sharemind framework.
+# Copyright (C) Cybernetica AS
+#
+# All rights are reserved. Reproduction in whole or part is prohibited
+# without the written consent of the copyright owner. The usage of this
+# code is subject to the appropriate license agreement.
+#
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8.12)
+PROJECT(SHAREMIND_LIBICONTROLLER CXX)
+
+SET(SHAREMIND_LIBICONTROLLER_VERSION "0.1.0")
+
+INCLUDE("${CMAKE_CURRENT_SOURCE_DIR}/config.local" OPTIONAL)
+INCLUDE("${CMAKE_CURRENT_BINARY_DIR}/config.local" OPTIONAL)
+
+FIND_PACKAGE(SharemindCxxHeaders REQUIRED)
+
+MACRO(SetList list)
+  SET("${list}" tmp)
+  LIST(REMOVE_ITEM "${list}" tmp)
+  LIST(APPEND "${list}" ${ARGN})
+ENDMACRO()
+
+SetList(SHAREMIND_LIBICONTROLLER_EXTERNAL_INCLUDE_DIRS ${SharemindCxxHeaders_INCLUDE_DIRS})
+SetList(SHAREMIND_LIBICONTROLLER_INSTALL_INCLUDE_DIRS
+        "${CMAKE_INSTALL_PREFIX}/include"
+        ${SHAREMIND_LIBICONTROLLER_EXTERNAL_INCLUDE_DIRS})
+LIST(REMOVE_DUPLICATES SHAREMIND_LIBICONTROLLER_INSTALL_INCLUDE_DIRS)
+
+SetList(SHAREMIND_LIBICONTROLLER_EXTERNAL_DEFINITIONS ${SharemindCxxHeaders_DEFINITIONS})
+SetList(SHAREMIND_LIBICONTROLLER_INSTALL_DEFINITIONS ${SHAREMIND_LIBICONTROLLER_EXTERNAL_DEFINITIONS})
+
+SetList(SHAREMIND_LIBICONTROLLER_EXTERNAL_LIBRARIES ${SharemindCxxHeaders_LIBRARIES})
+SetList(SHAREMIND_LIBICONTROLLER_INSTALL_LIBRARIES ${SHAREMIND_LIBICONTROLLER_EXTERNAL_LIBRARIES})
+
+FILE(GLOB_RECURSE LIBICONTROLLER_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h")
+INSTALL(FILES ${LIBICONTROLLER_HEADERS} DESTINATION "include/sharemind/controller")
+
+CONFIGURE_FILE(
+    "${CMAKE_CURRENT_SOURCE_DIR}/SharemindLibIControllerConfig.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/SharemindLibIControllerConfig.cmake" @ONLY)
+INSTALL(FILES "${CMAKE_CURRENT_BINARY_DIR}/SharemindLibIControllerConfig.cmake"
+        DESTINATION "lib/SharemindLibIController")
+CONFIGURE_FILE(
+    "${CMAKE_CURRENT_SOURCE_DIR}/SharemindLibIControllerConfigVersion.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/SharemindLibIControllerConfigVersion.cmake" @ONLY)
+INSTALL(FILES "${CMAKE_CURRENT_BINARY_DIR}/SharemindLibIControllerConfigVersion.cmake"
+        DESTINATION "lib/SharemindLibIController")
+

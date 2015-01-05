@@ -1,0 +1,17 @@
+#
+# Copyright (C) Cybernetica AS
+#
+# All rights are reserved. Reproduction in whole or part is prohibited
+# without the written consent of the copyright owner. The usage of this
+# code is subject to the appropriate license agreement.
+#
+
+# This file defines the following variables:
+#   SharemindLibIController_INCLUDE_DIRS - include directories
+#   SharemindLibIController_LIBRARIES    - libraries to link against
+#   SharemindLibIController_DEFINITIONS  - required compiler definitions
+
+
+SET(SharemindLibIController_INCLUDE_DIRS @SHAREMIND_LIBICONTROLLER_INSTALL_INCLUDE_DIRS@)
+SET(SharemindLibIController_LIBRARIES @SHAREMIND_LIBICONTROLLER_INSTALL_LIBRARIES@)
+SET(SharemindLibIController_DEFINITIONS @SHAREMIND_LIBICONTROLLER_INSTALL_DEFINITIONS@)
