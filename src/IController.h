@@ -61,10 +61,6 @@ public: /* Types */
 
     SHAREMIND_DEFINE_EXCEPTION(std::exception, Exception);
 
-    SHAREMIND_DEFINE_EXCEPTION_CONST_MSG(Exception,
-                                         NotReadyException,
-                                         "Controller is not ready!");
-
     SHAREMIND_DEFINE_EXCEPTION(Exception, ArgumentException);
 
     SHAREMIND_DEFINE_EXCEPTION_CONST_MSG(ArgumentException,
