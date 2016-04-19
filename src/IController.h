@@ -119,6 +119,28 @@ public: /* Types */
                                          LocalBytecodeTooBigException,
                                          "Local bytecode file was too big!");
 
+    SHAREMIND_DEFINE_EXCEPTION(Exception, ServerException);
+
+    SHAREMIND_DEFINE_EXCEPTION_CONST_MSG(
+            ServerException,
+            InvalidInstanceUuidException,
+            "Server provided invalid instance UUID!");
+
+    SHAREMIND_DEFINE_EXCEPTION_CONST_MSG(
+            ServerException,
+            InvalidServerUuidException,
+            "Server provided invalid server UUID!");
+
+    SHAREMIND_DEFINE_EXCEPTION_CONST_MSG(
+            ServerException,
+            InvalidProtocolVersionException,
+            "Unsupported controller protocol version!");
+
+    SHAREMIND_DEFINE_EXCEPTION_CONST_MSG(
+            ServerException,
+            ConnectionClosedException,
+            "ConnectionClosed!");
+
     SHAREMIND_DEFINE_EXCEPTION_CONST_MSG(
             Exception,
             DifferentResultSetSizesException,
