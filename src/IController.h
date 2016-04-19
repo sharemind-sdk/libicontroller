@@ -431,6 +431,7 @@ public: /* Methods */
     virtual ValueMap runCode(const std::string & codename,
                              const ValueMap & arguments) = 0;
 
+#if 0
     /**
      * \brief Uploads the given bytecode file to the application server nodess.
      * \param[in] localfile The local bytecode file to upload.
@@ -440,6 +441,7 @@ public: /* Methods */
      */
     virtual void uploadCode(const std::string & localfile,
                             const std::string & destfile) = 0;
+#endif
 
     /**
      * \todo DEBUGGING CAPABILITIES:
