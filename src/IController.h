@@ -25,10 +25,10 @@
 #include <cstdlib>
 #include <cstring>
 #include <exception>
+#include <map>
 #include <memory>
 #include <sharemind/Exception.h>
 #include <sharemind/MicrosecondTime.h>
-#include <sharemind/ScopedObjectMap.h>
 #include <string>
 #include <utility>
 #include <vector>
@@ -162,7 +162,7 @@ public: /* Types */
 
         /* Methods: */
 
-            inline Data(const size_t numWorkers)
+            inline Data(std::size_t const numWorkers)
                 : m_numWorkers((assert(numWorkers > 0u), numWorkers))
                 , m_exceptionTimes{new UsTime[numWorkers]}
                 , m_exceptions{new std::exception_ptr[numWorkers]}
@@ -170,14 +170,14 @@ public: /* Types */
 
         /* Fields: */
 
-            const size_t m_numWorkers;
-            const ScopedArrayPtr<const UsTime> m_exceptionTimes;
-            const ScopedArrayPtr<const std::exception_ptr> m_exceptions;
+            std::size_t const m_numWorkers;
+            ScopedArrayPtr<const UsTime> const m_exceptionTimes;
+            ScopedArrayPtr<const std::exception_ptr> const m_exceptions;
         };
 
     public: /* Methods: */
 
-        WorkerException(const size_t numWorkers)
+        WorkerException(std::size_t const numWorkers)
             : m_d(new Data((assert(numWorkers > 0u), numWorkers)))
         {}
 
@@ -186,23 +186,24 @@ public: /* Types */
         WorkerException & operator=(WorkerException &&) = default;
         WorkerException & operator=(const WorkerException &) = default;
 
-        inline size_t numExceptions() const noexcept {
-            size_t r = 0u;
-            for (size_t i = 0u; i < m_d->m_numWorkers; i++)
+        inline std::size_t numExceptions() const noexcept {
+            std::size_t r = 0u;
+            for (std::size_t i = 0u; i < m_d->m_numWorkers; i++)
                 if (m_d->m_exceptions[i])
                     r++;
             return r;
         }
 
-        inline size_t numWorkers() const noexcept { return m_d->m_numWorkers; }
+        inline std::size_t numWorkers() const noexcept
+        { return m_d->m_numWorkers; }
 
-        inline UsTime exceptionTime(const size_t i) const noexcept
+        inline UsTime exceptionTime(std::size_t const i) const noexcept
         { return m_d->m_exceptionTimes[(assert(i < m_d->m_numWorkers), i)]; }
 
         inline const UsTime * exceptionTimes() const noexcept
         { return m_d->m_exceptionTimes; }
 
-        inline const std::exception_ptr & nested_ptr(const size_t i)
+        inline const std::exception_ptr & nested_ptr(std::size_t const i)
                 const noexcept
         { return m_d->m_exceptions[(assert(i < m_d->m_numWorkers), i)]; }
 
@@ -299,10 +300,6 @@ public: /* Types */
                                              ElementSizeMismatchException,
                                              "Element value size mismatch!");
 
-        enum CopyT { COPY };
-        enum TakeOwnershipT { TAKE_OWNERSHIP };
-        enum ReferenceT { REFERENCE };
-
     public: /* Methods: */
 
         Value() = delete;
@@ -311,75 +308,33 @@ public: /* Types */
         Value & operator=(std::string &&) = delete;
         Value & operator=(const std::string &) = delete;
 
-        Value(const std::string & pd,
-              const std::string & type,
-              const void * const data,
-              const size_t size,
-              const CopyT)
-            : m_pdName(
-                  (assert(!type.empty() && "Value type cannot be empty!"),
-                   assert((data || size == 0u)
-                          && "Data pointer not given, but size was not zero!"),
-                   pd))
-            , m_typeName(type)
-            , m_data((size == 0u) ? nullptr : ::operator new(size))
+        Value(std::string pd,
+              std::string type,
+              std::shared_ptr<void> data,
+              std::size_t const size)
+            : m_pdName(std::move(pd))
+            , m_typeName(
+                  std::move(
+                      (assert(!type.empty() && "Value type cannot be empty!"),
+                       type)))
+            , m_data(std::move((assert(data || size == 0u), data)))
             , m_size(size)
-            , m_ownData(size != 0u)
-        {
-            if (size != 0u)
-                memcpy(const_cast<void *>(m_data), data, size);
-        }
-
-        Value(const std::string & pd,
-              const std::string & type,
-              const void * const data,
-              const size_t size,
-              const TakeOwnershipT)
-            : m_pdName(
-                  (assert(!type.empty() && "Value type cannot be empty!"),
-                   assert((data || size == 0u)
-                          && "Data pointer not given, but size was not zero!"),
-                   pd))
-            , m_typeName(type)
-            , m_data(data)
-            , m_size(size)
-            , m_ownData(true)
         {}
-
-        Value(const std::string & pd,
-              const std::string & type,
-              const void * const data,
-              const size_t size,
-              const ReferenceT)
-            : m_pdName(
-                  (assert(!type.empty() && "Value type cannot be empty!"),
-                   assert((data || size == 0u)
-                          && "Data pointer not given, but size was not zero!"),
-                   pd))
-            , m_typeName(type)
-            , m_data(data)
-            , m_size(size)
-            , m_ownData(false)
-        {}
-
-        inline ~Value() noexcept {
-            if (m_ownData)
-                ::operator delete(const_cast<void *>(m_data));
-        }
 
         inline const std::string & pdName() const noexcept { return m_pdName; }
 
         inline const std::string & typeName() const noexcept
         { return m_typeName; }
 
-        inline const void * data() const noexcept { return m_data; }
+        inline std::shared_ptr<void> const & data() const noexcept
+        { return m_data; }
 
-        inline size_t size() const noexcept { return m_size; }
+        inline std::size_t size() const noexcept { return m_size; }
 
         template <typename T>
         inline T getValueAssertCorrectSize() const noexcept {
             assert(m_size == sizeof(T) && "Value is not of same size!");
-            return *static_cast<const T *>(m_data);
+            return *static_cast<const T *>(m_data.get());
         }
 
         template <typename T>
@@ -392,7 +347,7 @@ public: /* Types */
         template <typename T>
         inline std::vector<T> getVectorAssertCorrectSize() const {
             assert(m_size % sizeof(T) == 0u && "Element value size mismatch!");
-            const T * const begin = static_cast<const T *>(m_data);
+            const T * const begin = static_cast<const T *>(m_data.get());
             return std::vector<T>(begin, begin + (m_size / sizeof(T)));
         }
 
@@ -404,13 +359,13 @@ public: /* Types */
         }
 
         inline std::string getString() const
-        { return std::string(static_cast<const char *>(m_data), m_size); }
+        { return std::string(static_cast<const char *>(m_data.get()), m_size); }
 
         template <typename Container>
         inline void assignToAssertCorrectSize(Container & v) const {
             using T = typename Container::value_type;
             assert(m_size % sizeof(T) == 0u && "Element value size mismatch!");
-            const T * const begin = static_cast<const T *>(m_data);
+            const T * const begin = static_cast<const T *>(m_data.get());
             v.assign(begin, begin + (m_size / sizeof(T)));
         }
 
@@ -424,15 +379,14 @@ public: /* Types */
 
     protected: /* Fields: */
 
-        const std::string m_pdName;     /**< \note Empty for public types */
-        const std::string m_typeName;
-        const void * const m_data;
-        const size_t m_size;
-        const bool m_ownData;
+        std::string const m_pdName;     /**< \note Empty for public types */
+        std::string const m_typeName;
+        std::shared_ptr<void> const m_data;
+        std::size_t const m_size;
 
     }; /* class Value */
 
-    using ValueMap = ScopedObjectMap<std::string, const Value>;
+    using ValueMap = std::map<std::string, std::shared_ptr<Value> >;
 
 public: /* Methods */
 
