@@ -135,7 +135,7 @@ public: /* Types */
     SHAREMIND_DEFINE_EXCEPTION_CONST_MSG(
             ServerException,
             ConnectionClosedException,
-            "ConnectionClosed!");
+            "Connection closed!");
 
     SHAREMIND_DEFINE_EXCEPTION_CONST_MSG(
             Exception,
