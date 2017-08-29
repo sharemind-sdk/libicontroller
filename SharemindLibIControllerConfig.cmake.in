@@ -23,6 +23,6 @@
 #   SharemindLibIController_DEFINITIONS  - required compiler definitions
 
 
-SET(SharemindLibIController_INCLUDE_DIRS @SHAREMIND_LIBICONTROLLER_INSTALL_INCLUDE_DIRS@)
-SET(SharemindLibIController_LIBRARIES @SHAREMIND_LIBICONTROLLER_INSTALL_LIBRARIES@)
-SET(SharemindLibIController_DEFINITIONS @SHAREMIND_LIBICONTROLLER_INSTALL_DEFINITIONS@)
+SET(SharemindLibIController_INCLUDE_DIRS @SharemindLibIController_INSTALL_INCLUDE_DIRS@)
+SET(SharemindLibIController_LIBRARIES @SharemindLibIController_INSTALL_LIBRARIES@)
+SET(SharemindLibIController_DEFINITIONS @SharemindLibIController_INSTALL_DEFINITIONS@)
