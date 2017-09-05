@@ -40,17 +40,15 @@ INSTALL(FILES ${SharemindLibIController_HEADERS}
 
 
 # Install CMake files:
-SharemindNewUniqueList(SharemindLibIController_INSTALL_INCLUDE_DIRS
-    "${CMAKE_INSTALL_PREFIX}/include"
-    ${SharemindCxxHeaders_INCLUDE_DIRS}
+SharemindCreateCMakeFindFiles(
+    INCLUDE_DIRS
+        "${CMAKE_INSTALL_PREFIX}/include"
+        ${SharemindCxxHeaders_INCLUDE_DIRS}
+    DEFINITIONS
+        ${SharemindCxxHeaders_DEFINITIONS}
+    LIBRARIES
+        ${SharemindCxxHeaders_LIBRARIES}
 )
-SharemindNewUniqueList(SharemindLibIController_INSTALL_DEFINITIONS
-    ${SharemindCxxHeaders_DEFINITIONS}
-)
-SharemindNewUniqueList(SharemindLibIController_INSTALL_LIBRARIES
-    ${SharemindCxxHeaders_LIBRARIES}
-)
-SharemindUseCMakeFindFiles()
 
 
 # Packaging:
